@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Student Feedback - Jamia Hamdard</title>
+<style>
+body {
+    display: flex;
+    margin: 0;
+    font-family: 'Times New Roman', serif;
+    font-size: 12pt;
+    background-color: #f5f5f5;
+}
+
+.left {
+    width: 45%;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 20px;
+    border-right: 1px solid #ccc;
+    background-color: white;
+}
+
+.right {
+    width: 55%;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 20px;
+    background: #f7f7f7;
+}
+
+.preview-container {
+    width: 21cm;
+    min-height: 29.7cm;
+    margin: 0 auto;
+    padding: 1.5cm 1.5cm 1.8cm 1.5cm; /* Added 0.3cm extra at bottom */
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    line-height: 1.4;
+    font-family: 'Times New Roman', serif;
+    font-size: 12pt;
+    box-sizing: border-box;
+}
+input, select, textarea {
+    width: 100%;
+    padding: 6px;
+    margin-top: 4px;
+    box-sizing: border-box;
+    font-family: 'Times New Roman', serif;
+    font-size: 12pt;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+    font-family: 'Times New Roman', serif;
+    font-size: 12pt;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Times New Roman', serif;
+    font-size: 11pt;
+}
+
+.form-table {
+    width: 100%;
+    border: 1px solid #000;
+    margin: 5px 0;
+}
+
+.form-table td {
+    border: 1px solid #000;
+    padding: 3px; /* Reduced from 5px */
+    vertical-align: top;
+}
+
+.feedback-table .attr-col {
+    width: 45%;
+    text-align: left;
+    padding-left: 4px; /* Reduced from 6px */
+    line-height: 1.1; /* Reduced from 1.2 */
+}
+.form-table .label-cell {
+    font-weight: bold;
+    background-color: #f2f2f2;
+    width: 25%;
+}
+
+.feedback-table {
+    width: 100%;
+    border: 1px solid #000;
+    margin: 5px 0; /* Reduced from 10px */
+    font-size: 10.5pt;
+}
+
+.feedback-table th, .feedback-table td {
+    border: 1px solid #000;
+    padding: 2px; /* Reduced from 3px */
+    text-align: center;
+    vertical-align: middle;
+}
+.additional-feedback {
+    margin-top: 5px; /* Reduced from 15px */
+    font-size: 11pt;
+}
+
+.compact-row {
+    margin-bottom: 6px; /* Reduced from 12px */
+}
+.feedback-table .sno-col {
+    width: 5%;
+    text-align: center;
+}
+
+.feedback-table .attr-col {
+    width: 45%;
+    text-align: left;
+    padding-left: 8px;
+}
+
+.feedback-table .score-col {
+    width: 10%;
+}
+
+.score-box {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #000;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.score-box.ticked {
+    background-color: white;
+    color: black;
+}
+
+
+.radio-group {
+    display: none;
+}
+
+button {
+    background: #2c3e50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+    font-family: 'Times New Roman', serif;
+    font-size: 12pt;
+    border-radius: 3px;
+}
+
+button:hover {
+    background: #34495e;
+}
+
+.header {
+    text-align: center;
+    font-weight: bold;
+    font-size: 14pt;
+    margin-bottom: 3px; /* Reduced from 5px */
+}
+
+.sub-header {
+    text-align: center;
+    font-size: 11pt;
+    margin-bottom: 5px; /* Reduced from 15px */
+}
+
+.main-title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 13pt;
+    margin: 5px 0; /* Reduced from 20px */
+    text-decoration: underline;
+}
+.instructions {
+    text-align: center;
+    font-style: italic;
+    margin: 10px 0;
+}
+
+.additional-feedback {
+    margin-top: 10px;
+}
+
+.additional-feedback .option {
+    margin: 5px 0;
+}
+
+.print-only {
+    display: none;
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .preview-container, .preview-container * {
+        visibility: visible;
+    }
+    .preview-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none;
+        border: none;
+    }
+}
+
+.checkbox-container {
+    display: inline-block;
+    margin: 0 15px;
+}
+
+.checkbox-label {
+    display: inline-block;
+    margin-left: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LEFT SIDE INPUT FORM -->
+<div class="left">
+<h2>Fill Feedback Form</h2>
+
+<label>Department</label>
+<input id="dept" value="CSE" oninput="updatePreview()">
+
+<label>School/Institute Centre</label>
+<input id="school" value="SEST" oninput="updatePreview()">
+
+<label>Name of Teacher</label>
+<input id="teacher" placeholder="Dr. Naved Alam" oninput="updatePreview()">
+
+<label>Programme</label>
+<input id="programme" value="B-Tech" oninput="updatePreview()">
+
+<label>Semester</label>
+<select id="semester" oninput="updatePreview()">
+<option value=""></option>
+<option>I</option><option>II</option>
+<option>III</option><option>IV</option>
+<option>V</option><option>VI</option>
+<option>VII</option><option>VIII</option>
+</select>
+
+<label>Year</label>
+<input id="year" value="2025" oninput="updatePreview()">
+
+<label>Course Title</label>
+<select id="course" onchange="setCourseCode(); updatePreview()">
+<option value=""></option>
+<option value="Engineering Graphics and Design">Engineering Graphics and Design</option>
+<option value="Discrete Structure">Discrete Structure</option>
+</select>
+
+<label>Code</label>
+<input id="code" readonly oninput="updatePreview()">
+
+<label>Name of Student (optional)</label>
+<input id="student" oninput="updatePreview()">
+
+<label>Enrollment No. (optional)</label>
+<input id="roll" oninput="updatePreview()">
+
+<hr>
+<h3>Score Assessment</h3>
+
+<div id="scoreInputs">
+<script>
+const attributes = [
+    "Planning of the classes",
+    "Punctuality",
+    "Promptness in conducting classes",
+    "Use of audio visual aids",
+    "Clarity in presentation",
+    "Depth of course content",
+    "Knowledge base of teacher",
+    "Method of communication",
+    "Recommends additional learning resources (books, journals, websites etc.)",
+    "Provides feedback to students on performance in class/internal assessment tests",
+    "Encourages co-curricular activities (seminars, group discussion, study tours, etc.)",
+    "Encourages extracurricular activities (cultural, sports, social activities)",
+    "Provides assistance and counselling on the subject and is available for consultation after the class",
+    "Discusses career goal and placement",
+    "Interacts with students and encourages students raising doubts",
+    "Maintains discipline in class",
+    "Inspires as a role model",
+    "Overall assessment on the scale of 1 to 5"
+];
+
+let scoreInputHTML = '<table class="feedback-table">';
+scoreInputHTML += '<tr><th class="sno-col">S. No.</th><th class="attr-col">ATTRIBUTES</th><th>5</th><th>4</th><th>3</th><th>2</th><th>1</th></tr>';
+
+for (let i = 0; i < attributes.length; i++) {
+    scoreInputHTML += `
+    <tr>
+        <td class="sno-col">${i + 1}</td>
+        <td class="attr-col">${attributes[i]}</td>
+        <td class="score-col"><input type="radio" name="score${i}" value="5" onclick="updatePreview()"></td>
+        <td class="score-col"><input type="radio" name="score${i}" value="4" onclick="updatePreview()"></td>
+        <td class="score-col"><input type="radio" name="score${i}" value="3" onclick="updatePreview()"></td>
+        <td class="score-col"><input type="radio" name="score${i}" value="2" onclick="updatePreview()"></td>
+        <td class="score-col"><input type="radio" name="score${i}" value="1" onclick="updatePreview()"></td>
+    </tr>`;
+}
+
+scoreInputHTML += '</table>';
+document.write(scoreInputHTML);
+</script>
+</div>
+
+<h3>Additional Feedback</h3>
+
+<label>1. Percentage of syllabus taught in the class?</label>
+<div class="checkbox-container">
+    <input type="radio" name="add1" value="91-100%" id="add1a" onclick="updatePreview()">
+    <label for="add1a" class="checkbox-label">i) 91-100%</label>
+</div>
+<div class="checkbox-container">
+    <input type="radio" name="add1" value="76-90%" id="add1b" onclick="updatePreview()">
+    <label for="add1b" class="checkbox-label">ii) 76-90%</label>
+</div>
+<div class="checkbox-container">
+    <input type="radio" name="add1" value="51-75%" id="add1c" onclick="updatePreview()">
+    <label for="add1c" class="checkbox-label">iii) 51-75%</label>
+</div>
+<div class="checkbox-container">
+    <input type="radio" name="add1" value="41-50%" id="add1d" onclick="updatePreview()">
+    <label for="add1d" class="checkbox-label">iv) 41-50%</label>
+</div>
+<div class="checkbox-container">
+    <input type="radio" name="add1" value="< 40%" id="add1e" onclick="updatePreview()">
+    <label for="add1e" class="checkbox-label">v) < 40%</label>
+</div>
+
+<label>2. Percentage of course content delivered by face to face contact using chalk/marker board method?</label>
+<div class="checkbox-container">
+    <input type="radio" name="add2" value="91-100%" id="add2a" onclick="updatePreview()">
+    <label for="add2a" class="checkbox-label">i) 91-100%</label>
+</div>
+<div class="checkbox-container">
+    <input type="radio" name="add2" value="76-90%" id="add2b" onclick="updatePreview()">
+    <label for="add2b" class="checkbox-label">ii) 76-90%</label>
+</div>
+<div class="checkbox-container">
+    <input type="radio" name="add2" value="51-75%" id="add2c" onclick="updatePreview()">
+    <label for="add2c" class="checkbox-label">iii) 51-75%</label>
+</div>
+<div class="checkbox-container">
+    <input type="radio" name="add2" value="41-50%" id="add2d" onclick="updatePreview()">
+    <label for="add2d" class="checkbox-label">iv) 41-50%</label>
+</div>
+<div class="checkbox-container">
+    <input type="radio" name="add2" value="< 40%" id="add2e" onclick="updatePreview()">
+    <label for="add2e" class="checkbox-label">v) < 40%</label>
+</div>
+
+<label>3. Percentage of course content delivered by electronic media (ppt, simulation etc.)</label>
+<div class="checkbox-container">
+    <input type="radio" name="add3" value="91-100%" id="add3a" onclick="updatePreview()">
+    <label for="add3a" class="checkbox-label">i) 91-100%</label>
+</div>
+<div class="checkbox-container">
+    <input type="radio" name="add3" value="76-90%" id="add3b" onclick="updatePreview()">
+    <label for="add3b" class="checkbox-label">ii) 76-90%</label>
+</div>
+<div class="checkbox-container">
+    <input type="radio" name="add3" value="51-75%" id="add3c" onclick="updatePreview()">
+    <label for="add3c" class="checkbox-label">iii) 51-75%</label>
+</div>
+<div class="checkbox-container">
+    <input type="radio" name="add3" value="41-50%" id="add3d" onclick="updatePreview()">
+    <label for="add3d" class="checkbox-label">iv) 41-50%</label>
+</div>
+<div class="checkbox-container">
+    <input type="radio" name="add3" value="< 40%" id="add3e" onclick="updatePreview()">
+    <label for="add3e" class="checkbox-label">v) < 40%</label>
+</div>
+
+<br>
+<button onclick="resetForm()">Reset Form</button>
+<button onclick="printForm()">Print Form</button>
+<button onclick="saveAsPDF()">Save as PDF</button>
+</div>
+
+<!-- RIGHT PANEL PREVIEW -->
+<div class="right">
+<h2>Preview (A4 Size)</h2>
+<div class="preview-container" id="preview"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+function setCourseCode() {
+    const course = document.getElementById('course').value;
+    const codeInput = document.getElementById('code');
+    
+    const courseCodes = {
+        'Engineering Graphics and Design': 'BTCSE AI/BTECE 105',
+        'Discrete Structure': 'BCA/BSC 303',
+        'Data Structures': 'CSE 201',
+        'Computer Networks': 'CSE 301',
+        'Operating Systems': 'CSE 302'
+    };
+    
+    codeInput.value = courseCodes[course] || '';
+}
+
+function updatePreview() {
+    // Get all form values
+    const dept = document.getElementById('dept').value;
+    const school = document.getElementById('school').value;
+    const teacher = document.getElementById('teacher').value;
+    const programme = document.getElementById('programme').value;
+    const semester = document.getElementById('semester').value;
+    const year = document.getElementById('year').value;
+    const course = document.getElementById('course').value;
+    const code = document.getElementById('code').value;
+    const student = document.getElementById('student').value;
+    const roll = document.getElementById('roll').value;
+    
+    // Create header table
+    const headerTable = `
+    <table class="form-table">
+        <tr>
+            <td class="label-cell">Department</td>
+            <td style="width: 25%;">${dept || ''}</td>
+            <td class="label-cell">School/Institute Centre</td>
+            <td>${school || ''}</td>
+        </tr>
+        <tr>
+            <td class="label-cell">Name of teacher</td>
+            <td>${teacher || ''}</td>
+            <td class="label-cell">Programme</td>
+            <td>${programme || ''}</td>
+        </tr>
+        <tr>
+            <td class="label-cell">Semester</td>
+            <td>${semester || ''}</td>
+            <td class="label-cell">Year</td>
+            <td>${year || ''}</td>
+        </tr>
+        <tr>
+            <td class="label-cell">Course title</td>
+            <td>${course || ''}</td>
+            <td class="label-cell">Code</td>
+            <td>${code || ''}</td>
+        </tr>
+        <tr>
+            <td class="label-cell">Name of student (optional)</td>
+            <td>${student || ''}</td>
+            <td class="label-cell">Enrolment No. (optional)</td>
+            <td>${roll || ''}</td>
+        </tr>
+    </table>`;
+    
+    // Create score table with tick marks
+    let scoreTableRows = '';
+    for (let i = 0; i < attributes.length; i++) {
+        const radios = document.getElementsByName(`score${i}`);
+        let selectedValue = '';
+        
+        for (let radio of radios) {
+            if (radio.checked) {
+                selectedValue = radio.value;
+                break;
+            }
+        }
+        
+        scoreTableRows += `
+        <tr>
+            <td class="sno-col">${i + 1}</td>
+            <td class="attr-col">${attributes[i]}</td>
+            <td class="score-col"><div class="score-box ${selectedValue === '5' ? 'ticked' : ''}">${selectedValue === '5' ? '✓' : ''}</div></td>
+            <td class="score-col"><div class="score-box ${selectedValue === '4' ? 'ticked' : ''}">${selectedValue === '4' ? '✓' : ''}</div></td>
+            <td class="score-col"><div class="score-box ${selectedValue === '3' ? 'ticked' : ''}">${selectedValue === '3' ? '✓' : ''}</div></td>
+            <td class="score-col"><div class="score-box ${selectedValue === '2' ? 'ticked' : ''}">${selectedValue === '2' ? '✓' : ''}</div></td>
+            <td class="score-col"><div class="score-box ${selectedValue === '1' ? 'ticked' : ''}">${selectedValue === '1' ? '✓' : ''}</div></td>
+        </tr>`;
+    }
+    
+    const scoreTable = `
+    <table class="feedback-table">
+        <thead>
+            <tr>
+                <th class="sno-col">S. No.</th>
+                <th class="attr-col">ATTRIBUTES</th>
+                <th>5</th>
+                <th>4</th>
+                <th>3</th>
+                <th>2</th>
+                <th>1</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${scoreTableRows}
+        </tbody>
+    </table>`;
+    
+    // Get additional feedback values
+    const getSelectedOption = (name) => {
+        const radios = document.getElementsByName(name);
+        for (let radio of radios) {
+            if (radio.checked) return radio.value;
+        }
+        return '';
+    };
+    
+    const add1 = getSelectedOption('add1');
+    const add2 = getSelectedOption('add2');
+    const add3 = getSelectedOption('add3');
+    
+    // Create checkboxes for additional feedback
+    const createCheckboxes = (name, selectedValue) => {
+        const options = [
+            { value: "91-100%", label: "i) 91-100%" },
+            { value: "76-90%", label: "ii) 76-90%" },
+            { value: "51-75%", label: "iii) 51-75%" },
+            { value: "41-50%", label: "iv) 41-50%" },
+            { value: "< 40%", label: "v) < 40%" }
+        ];
+        
+        let checkboxes = '';
+        options.forEach(option => {
+            const isChecked = selectedValue === option.value;
+            checkboxes += `
+            <div style="display: inline-block; margin-right: 20px;">
+                ${option.label} <span style="border: 1px solid #000; padding: 0 8px; margin-left: 5px;">${isChecked ? '✓' : '&nbsp;&nbsp;&nbsp;'}</span>
+            </div>`;
+        });
+        return checkboxes;
+    };
+    
+    const additionalFeedback = `
+    <div class="additional-feedback">
+        <div style="text-decoration: underline; font-weight: bold; margin-bottom: 5px;">
+            Additional feedback (Tick [√] the appropriate box):
+        </div>
+        
+        <div style="margin-bottom:0px;">
+            <div style="font-weight: bold; margin-bottom: 5px;">1. Percentage of syllabus taught in the class?</div>
+            ${createCheckboxes('add1', add1)}
+        </div>
+        
+        <div style="margin-bottom: 0px;">
+            <div style="font-weight: bold; margin-bottom: 5px;">2. Percentage of course content delivered by face to face contact using chalk/marker board method?</div>
+            ${createCheckboxes('add2', add2)}
+        </div>
+        
+        <div style="margin-bottom: 0px;">
+            <div style="font-weight: bold; margin-bottom: 5px;">3. Percentage of course content delivered by electronic media (ppt, simulation etc.)</div>
+            ${createCheckboxes('add3', add3)}
+        </div>
+    </div>`;
+    
+    // Update preview
+    document.getElementById('preview').innerHTML = `
+    <div class="header">JAMIA HAMDARD</div>
+    <div class="sub-header">New Delhi -- 110062</div>
+    
+    <div class="main-title">PERFORMANCE APPRAISAL OF CONTRACTUAL TEACHING STAFF BY STUDENTS</div>
+    
+    ${headerTable}
+    
+    <div style="margin: 10px 0; text-align: center; font-style: italic;">
+        Rate each attribute of the teacher by ticking (√) the box in the table according to your assessment of the teacher's performance on a five point scale given below.
+    </div>
+    
+    <div style="text-align: center; font-weight: bold; margin-bottom: 5px;">
+        5 -- Excellent; 4 -- Good; 3 -- Average; 2 - Poor; 1 -- Very poor
+    </div>
+    
+    ${scoreTable}
+    
+    ${additionalFeedback}
+    
+    <div style="text-align: center; font-style: italic; margin-top: 5px;">
+        Semester-wise feedback will be collected from students.
+    </div>`;
+}
+
+function resetForm() {
+    document.getElementById('dept').value = 'CSE';
+    document.getElementById('school').value = 'SEST';
+    document.getElementById('teacher').value = '';
+    document.getElementById('programme').value = 'B-Tech';
+    document.getElementById('semester').selectedIndex = 0;
+    document.getElementById('year').value = '2025';
+    document.getElementById('course').selectedIndex = 0;
+    document.getElementById('code').value = '';
+    document.getElementById('student').value = '';
+    document.getElementById('roll').value = '';
+    
+    // Reset all radio buttons
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+        radio.checked = false;
+    });
+    
+    updatePreview();
+}
+
+function printForm() {
+    window.print();
+}
+
+async function saveAsPDF() {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+    });
+    
+    // Remove PDF metadata that shows date and file path
+    pdf.setProperties({
+        title: 'Student Feedback Form - Jamia Hamdard',
+        subject: 'Student Feedback',
+        author: 'Jamia Hamdard',
+        creator: 'Jamia Hamdard',
+        keywords: 'feedback, student, teacher, evaluation'
+    });
+    
+    const element = document.getElementById('preview');
+    
+    // Hide any browser UI elements before capture
+    const originalTitle = document.title;
+    document.title = 'Student Feedback Form';
+    
+    await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        width: 794,
+        height: element.scrollHeight,
+        windowWidth: 794,
+        windowHeight: element.scrollHeight,
+        onclone: function(clonedDoc) {
+            // Remove any browser-specific elements in cloned document
+            clonedDoc.title = 'Student Feedback Form';
+        }
+    }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdfWidth = 210;
+        const pdfHeight = 297;
+        const imgWidth = 190;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        // Adjust these values to control top/bottom margins
+        const xOffset = (pdfWidth - imgWidth) / 2; // Center horizontally
+        const yOffset = 5; // Reduced from 10mm to 5mm for smaller top margin
+        
+        pdf.addImage(imgData, 'PNG', xOffset, yOffset, imgWidth, imgHeight);
+        
+        // Save with a simple filename
+        pdf.save('Student_Feedback_Form.pdf');
+        
+        // Restore original title
+        document.title = originalTitle;
+    });
+}
+// Initialize
+setCourseCode();
+updatePreview();
+</script>
+
+</body>
+</html>
